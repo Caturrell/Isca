@@ -1,3 +1,9 @@
+"""
+
+python Isca/exp/test_cases/held_suarez/held_suarez_test_case.py
+
+"""
+
 import numpy as np
 
 from isca import DryCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
@@ -23,7 +29,7 @@ cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 
-exp_name = 'held_suarez_default'
+exp_name = 'held_suarez_delh40'
 exp = Experiment(exp_name, codebase=cb)
 
 #Tell model how to write diagnostics
@@ -72,7 +78,7 @@ namelist = Namelist({
     'hs_forcing_nml': {
         't_zero': 315.,    # temperature at reference pressure at equator (default 315K)
         't_strat': 200.,   # stratosphere temperature (default 200K)
-        'delh': 60.,       # equator-pole temp gradient (default 60K)
+        'delh': 40.,       # equator-pole temp gradient (default 60K)
         'delv': 10.,       # lapse rate (default 10K)
         'eps': 0.,         # stratospheric latitudinal variation (default 0K)
         'sigma_b': 0.7,    # boundary layer friction height (default p/ps = sigma = 0.7)
