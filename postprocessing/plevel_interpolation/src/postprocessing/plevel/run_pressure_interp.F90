@@ -67,7 +67,7 @@ logical :: do_all_fields = .false.
 logical :: use_default_missing_value = .false.
 
 logical :: allow_zero_topog = .false.
-logical :: allow_zero_sphum = .false.
+logical :: allow_zero_sphum = .true.
 
 integer :: time_beg=1, time_end=0, time_inc=1
 integer :: blksz
@@ -1072,6 +1072,7 @@ contains
               if (allow_zero_sphum) then
                   print *, 'NOTE: field does not exist: ',trim(names(6)),' = 0 assumed'
               else
+                  print *, 'allow_zero_sphum=',allow_zero_sphum
                   print *, 'ERROR: required field does not exist: ',trim(names(6))
                   ierr = 1
                   do_hght = .false.

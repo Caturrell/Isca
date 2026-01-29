@@ -10,7 +10,7 @@ def plevel_call(nc_file_in,nc_file_out, var_names = '-a', p_levels='default', ma
 
     check_gfdl_directories_set()
 
-    interper = './plevel.sh'
+    interper = '/home/links/ct715/Isca/postprocessing/plevel_interpolation/scripts/plevel.sh'
     nc_file = ' -i '+nc_file_in
     out_file = ' -o '+nc_file_out
     if p_levels == 'model':
@@ -50,13 +50,13 @@ def join_files(files_in, file_name_out):
 
     subprocess.call('cdo mergetime '+files_in+' '+file_name_out, shell=True)
     
-def climatology(file_in, file_name_out):
+def climatology(files_in, file_name_out):
     subprocess.call('cdo mergetime '+files_in+' '+file_name_out, shell=True)
 
-def monthly_climatology(file_in, file_name_out):
+def monthly_climatology(files_in, file_name_out):
     subprocess.call('cdo ymonmean '+files_in+' '+file_name_out, shell=True)
     
-def merge_two_netcdf_files(file_in_1, file_in_2, file_name_out):
+def merge_two_netcdf_files(files_in_1, file_in_2, file_name_out):
     subprocess.call('cdo merge '+files_in_1+' '+file_name_out, shell=True)
 
 def check_gfdl_directories_set():

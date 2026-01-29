@@ -1,13 +1,19 @@
+"""
+
+python Isca/exp/test_cases/held_suarez/held_suarez_test_case.py
+
+"""
+
 import numpy as np
-import os
+
 from isca import DryCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
 NCORES = 16
-RESOLUTION = 'T85', 40  # T42 horizontal resolution, 25 levels in pressure
+RESOLUTION = 'T42', 25  # T42 horizontal resolution, 25 levels in pressure
 
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
-cb = DryCodeBase.from_directory(GFDL_BASE) 
+cb = DryCodeBase.from_directory(GFDL_BASE)
 
 # or it can point to a specific git repo and commit id.
 # This method should ensure future, independent, reproducibility of results.
@@ -23,10 +29,8 @@ cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 
-exp_name = 'polvani_kushner_60delh_10years_T85'
+exp_name = 'held_suarez_delh_default'
 exp = Experiment(exp_name, codebase=cb)
-
-# exp.inputfiles = [os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')]
 
 #Tell model how to write diagnostics
 diag = DiagTable()
@@ -37,15 +41,10 @@ diag.add_file('atmos_daily', 1, 'days', time_units='days')
 diag.add_field('dynamics', 'ps', time_avg=True)
 diag.add_field('dynamics', 'bk')
 diag.add_field('dynamics', 'pk')
-
 diag.add_field('dynamics', 'ucomp', time_avg=True)
 diag.add_field('dynamics', 'vcomp', time_avg=True)
 diag.add_field('dynamics', 'temp', time_avg=True)
-diag.add_field('dynamics', 'omega', time_avg=True)
 
-# diag.add_field('hs_forcing', 'teq', time_avg=True)
-#diag.add_field('hs_forcing', 'local_heating', time_avg=True)
-# diag.add_field('hs_forcing', 'udt_rdamp', time_avg=True)
 
 exp.diag_table = diag
 
@@ -54,7 +53,7 @@ exp.diag_table = diag
 namelist = Namelist({
     'main_nml': {
         'dt_atmos': 600,
-        'days': 180,
+        'days': 30,
         'calendar': 'thirty_day',
         'current_date': [2000,1,1,0,0,0]
     },
@@ -64,16 +63,15 @@ namelist = Namelist({
     },
 
     'spectral_dynamics_nml': {
-        'damping_order'           : 2,                      # default: 2
-        #'water_correction_limit'  : 200.e2,                 # default: 0
-        'do_water_correction': False,
+        'damping_order'           : 4,                      # default: 2
+        'water_correction_limit'  : 200.e2,                 # default: 0
         'reference_sea_level_press': 1.0e5,                  # default: 101325
-        'valid_range_t'           : [100., 500.],           # default: (100, 500)
+        'valid_range_t'           : [100., 800.],           # default: (100, 500)
         'initial_sphum'           : 0.0,                  # default: 0
-        'vert_coord_option'       : 'even_sigma',         # default: 'even_sigma'
-        'scale_heights': 11.0,
-        'exponent': 3.0,
-        'surf_res': 0.5,
+        'vert_coord_option'       : 'uneven_sigma',         # default: 'even_sigma'
+        'scale_heights': 6.0,
+        'exponent': 7.5,
+        'surf_res': 0.5
     },
 
     # configure the relaxation profile
@@ -84,36 +82,15 @@ namelist = Namelist({
         'delv': 10.,       # lapse rate (default 10K)
         'eps': 0.,         # stratospheric latitudinal variation (default 0K)
         'sigma_b': 0.7,    # boundary layer friction height (default p/ps = sigma = 0.7)
-        'equilibrium_t_option': 'Polvani_Kushner',
+
         # negative sign is a flag indicating that the units are days
         'ka':   -40.,      # Constant Newtonian cooling timescale (default 40 days)
         'ks':    -4.,      # Boundary layer dependent cooling timescale (default 4 days)
         'kf':   -1.,       # BL momentum frictional timescale (default 1 days)
-        'z_ozone': 15.,     # Height (in km) of stratospheric warming start
-        'do_conserve_energy':   True,  # convert dissipated momentum into heat (default True)
-        'sponge_flag': True,           # Turn on simple damping in upper levels
-        # 'polar_heating_srfamp': 2.,
-        # 'polar_heating_latwidth': 20*np.pi/180.,
-        # 'polar_heating_latcenter': 90*np.pi/180.,
-        # 'polar_heating_sigwidth': 0.1,
-        # 'polar_heating_sigcenter': 1.,
-        # 'local_heating_option': 'Polar'
-        'relax_to_qbo': False,
-        'qbo_amp': -20.
-    },
-    
-    # 'damping_driver_nml': {
-    #     'do_rayleigh': True,
-    #     'trayfric': -0.5,              # neg. value: time in *days*
-    #     'sponge_pbottom':  50., #Bottom of the model's sponge down to 0.5hPa
-    #     'do_conserve_energy': True,    
-    # },
 
-    # 'spectral_init_cond_nml':{
-    #      'topog_file_name': 'era_land_t42.nc', #Name of land input file, which will also contain topography if generated using Isca's `land_file_generator_fn.py' routine.
-    #      'topography_option': 'input' #!Tell model to get topography from input file
-    # },
-    
+        'do_conserve_energy':   True,  # convert dissipated momentum into heat (default True)
+    },
+
     'diag_manager_nml': {
         'mix_snapshot_average_fields': False
     },
@@ -131,12 +108,8 @@ namelist = Namelist({
 exp.namelist = namelist
 exp.set_resolution(*RESOLUTION)
 
-# set how many years to run for
-years = 10
-num_months = 1 + (12 * years)
-
 #Lets do a run!
 if __name__ == '__main__':
     exp.run(1, num_cores=NCORES, use_restart=False)
-    for i in range(2, num_months):
+    for i in range(2, 13):
         exp.run(i, num_cores=NCORES)  # use the restart i-1 by default

@@ -1,10 +1,10 @@
 import numpy as np
 from netCDF4 import Dataset
 import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
+# from mpl_toolkits.basemap import Basemap
 
 # specify resolution
-t_res = 42
+t_res = 63
 
 #read in grid from approriate file
 resolution_file = Dataset('t'+str(t_res)+'_atmos_daily.nc', 'r', format='NETCDF3_CLASSIC')

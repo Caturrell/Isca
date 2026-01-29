@@ -29,14 +29,14 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import os
 
-def write_land(exp,land_mode='square',boundaries=[20.,60.,20.,60.],continents=['all'],topo_mode='none',mountains=['all'],topo_gauss=[40.,40.,20.,10.,3500.],waterworld=False):
+def write_land(t_res=42,land_mode='square',boundaries=[20.,60.,20.,60.],continents=['all'],topo_mode='none',mountains=['all'],topo_gauss=[40.,40.,20.,10.,3500.],waterworld=False):
 
 # Common features of set-ups
     # specify resolution
-    t_res = 42
+    t_res = t_res
     #read in grid from approriate file
     GFDL_BASE = os.environ['GFDL_BASE']
-    resolution_file = Dataset(GFDL_BASE + 'src/extra/python/scripts/gfdl_grid_files/t'+str(t_res)+'.nc', 'r', format='NETCDF3_CLASSIC')
+    resolution_file = Dataset(GFDL_BASE + '/src/extra/python/scripts/gfdl_grid_files/t'+str(t_res)+'.nc', 'r', format='NETCDF3_CLASSIC')
     lons = resolution_file.variables['lon'][:]
     lats = resolution_file.variables['lat'][:]
     lonb = resolution_file.variables['lonb'][:]
@@ -177,7 +177,8 @@ def write_land(exp,land_mode='square',boundaries=[20.,60.,20.,60.],continents=['
 
 
     #Write land and topography arrays to file
-    topo_filename = GFDL_BASE + 'exp/' + exp + '/input/land.nc'
+    # topo_filename = GFDL_BASE + '/exp/' + exp + '/input/land.nc'
+    topo_filename = f'/home/links/ct715/Isca/input/land_masks/land_T{t_res}.nc'
     topo_file = Dataset(topo_filename, 'w', format='NETCDF3_CLASSIC')
     lat = topo_file.createDimension('lat', nlat)
     lon = topo_file.createDimension('lon', nlon)
@@ -211,6 +212,6 @@ def write_land(exp,land_mode='square',boundaries=[20.,60.,20.,60.],continents=['
 
 
 if __name__ == "__main__":
-
-    write_land('test',land_mode='continents')
+    
+    write_land(t_res=63,land_mode='continents', topo_mode='sauliere2012')
 

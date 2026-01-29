@@ -149,7 +149,7 @@ done
 cat >> $namelist << EOF
     do_all_3d_fields = $do_all_3d_fields,
     do_all_fields = $do_all_fields,
-    allow_zero_sphum = $allow_zero,
+    allow_zero_sphum = .true.,
     allow_zero_topog = $allow_zero,
     mask_extrap = $mask_extrap,
     use_default_missing_value = $default_missval,
