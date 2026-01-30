@@ -39,6 +39,8 @@ exp.inputfiles = [os.path.join(GFDL_BASE,inputpath1+inputfile1+'.nc')] #,\ # INC
 diag = DiagTable()
 #diag.add_file('atmos_monthly', 30, 'days', time_units='days') 
 diag.add_file('atmos_daily', 1, 'days', time_units='days') # added output of daily file
+# diag.add_file('atmos_6_hourly', 6, 'hours', time_units='hours')
+### See: docs/source/modules/diag_manager_mod.rst
 
 #Tell model which diagnostics to write
 diag.add_field('dynamics', 'ps', time_avg=True)
@@ -140,5 +142,5 @@ exp.set_resolution(*RESOLUTION)
 #Let's do a run!
 if __name__ == '__main__':
     exp.run(1, num_cores=NCORES, use_restart=False)
-    for i in range(2, 505): #504 + 1 months for ~42y worth - NOTE: discard first 2y as spin-up
+    for i in range(2, 625): #624 + 1 months for 50y worth - NOTE: discard first 2y as spin-up
         exp.run(i, num_cores=NCORES)  # use the restart i-1 by default

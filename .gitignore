@@ -111,3 +111,5 @@ ENV/
 
 # mkdocs documentation
 /site
+
+*_atmos_daily.nc
