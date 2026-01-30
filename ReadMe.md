@@ -78,15 +78,25 @@ $ cd Isca
 
 3. **Create a conda environment**
 
-Requirements for Isca can be installed via the .yml file included with the model in `Isca/ci/environment-py3.9.yml`
-Navigate to the downloaded Isca folder, and create a conda environment `isca_env` containing the required packages using: 
+Requirements for Isca can be installed via the .yml files included with the model in `Isca/ci/`. The choice of which yml file depends on your system:
+
+Both the `environment-py3.12_frozen.yml` and `environment-py.yml` files install everything required to install Isca, including the gfortran compilers and netcdf-fortran. The `environment-py3.12_frozen.yml` file has frozen versions of all the packages that we ourselves have tested, whereas the `environment-py.yml` file will grab the latest versions of all of these libraries etc. 
+
+The `environment-py_no_compilers.yml` version includes only the packages needed by Isca without the gfortran compilers and netcdf-fortran. This is the option to choose if you want to install Isca on a system that already has a fortran compiler, MPI and netcdf-fortran already installed. 
+
+Once you've decided on the yml file to use, you should navigate to the downloaded Isca folder, and create a conda environment `isca_env` containing the required packages using: 
 ```{bash}
-$ conda env create -f ci/environment-py3.9.yml
+$ conda env create -f ci/YML_FILE_THAT_YOU_CHOSE.yml
 ```
 Then activate the environment; you'll need to do this each time you launch a new bash session.
 ```{bash}
 $ conda activate isca_env
 ```
+or
+```{bash}
+$ conda activate isca_env_no_comp
+``` 
+if you chose the no-compilers yml file.
 
 4. **Install the model**
 
@@ -100,33 +110,35 @@ Successfully installed Isca
 
 ### Compiling for the first time
 
-At Exeter University, Isca is compiled using:
+By installing Isca using the `ci/environment-py3.12_frozen.yml` file, you will have installed everything you need to run Isca, including the gfortran compiler, openmpi and netcdf. Whilst this may not be the optimal way of running Isca on your machine, it should work without too much extra effort. 
+
+Before Isca is compiled/run, an environment is first configured which loads the specific compilers and libraries necessary to build the code.  This done by setting the environment variable `GFDL_ENV` in your session. There is an option within Isca to use set `GFDL_ENV=ubuntu_conda`, which is setup to use the gfortran compiler you installed via the environment file.
+
+To make use of this environment, you should add a version of the following to your `~/.bashrc`:
+
+```{bash}
+# directory of the Isca source code
+export GFDL_BASE=/scratch/jamesp/Isca 
+# "environment" configuration for use with ubuntu-conda
+export GFDL_ENV=ubuntu_conda
+# temporary working directory used in running the model
+export GFDL_WORK=/scratch/jamesp/isca_work
+# directory for storing model output
+export GFDL_DATA=/scratch/jamesp/isca_data
+```
+
+The value of `GFDL_ENV` corresponds to a file in `src/extra/env` that is sourced before each run or compilation.
+
+You may wish to configure your own way to run Isca using locally available compilers, e.g. the Intel compilers. An example using such a setup is available here - `src/extra/env/emps-gv`.
+
+At the University of Exeter, Isca is compiled using:
 
 * Intel Compiler Suite 14.0
 * OpenMPI 10.0.1
 * NetCDF 4.3.3.1
 * git 2.1.2
 
-Different workstations/servers at different institutions will have different compilers and libraries available.  The Isca framework assumes you have something similar to our stack at Exeter, but provides a hook for you to configure the environment in which the model is run.
-
-Before Isca is compiled/run, an environment is first configured which loads the specific compilers and libraries necessary to build the code.  This done by setting the environment variable `GFDL_ENV` in your session.
-
-For example, on the EMPS workstations at Exeter, I have the following in my `~/.bashrc`:
-
-```{bash}
-# directory of the Isca source code
-export GFDL_BASE=/scratch/jamesp/Isca 
-# "environment" configuration for emps-gv4
-export GFDL_ENV=emps-gv
-# temporary working directory used in running the model
-export GFDL_WORK=/scratch/jamesp/gfdl_work
-# directory for storing model output
-export GFDL_DATA=/scratch/jamesp/gfdl_data
-```
-
-The value of `GFDL_ENV` corresponds to a file in `src/extra/env` that is sourced before each run or compilation.  For an example that you could adapt to work on your machine, see `src/extra/env/emps-gv`.
-
-We are not able to provide support in configuring your environment at other institutions other than Exeter University - we suggest that you contact your friendly local sysops technician for guidance in getting the compilers and libraries collated if you are not sure how to proceed.
+Different workstations/servers at different institutions will have different compilers and libraries available.  The Isca framework should run 'out of the box' using the gfortran compilers installed from the environment file. However, if you want to install the model using your own configuration then we are not able to provide support in configuring your environment. We suggest that you contact your friendly local sysops technician for guidance in getting the compilers and libraries collated if you are not sure how to proceed.
 
 If you work at another large institution and have successfully compiled and run Isca, we welcome you to commit your own environment config to `/src/extra/env/my-new-env` for future scientists to benefit from and avoid the pain of debugging compilation!
 

@@ -49,7 +49,11 @@ use   interpolator_mod, only: interpolate_type, interpolator_init, &
                               CONSTANT, INTERP_WEIGHTED_P
 
 use      astronomy_mod, only: diurnal_exoplanet, astronomy_init, obliq, ecc
+#ifdef COLUMN_MODEL
+use       spec_mpp_mod, only: grid_domain, get_grid_domain 
+#else
 use     transforms_mod, only: grid_domain, get_grid_domain
+#endif
 
 
 implicit none
@@ -1126,7 +1130,7 @@ real, intent(in),  dimension(:,:,:), optional :: mask
                 teq(:,:,k) = max(teq(:,:,k), tstr(:,:))
 		elseif (stratosphere_t_option == 'extend_tp') then
 			do i=1,size(t,1)
-			do j=1,size(t,1)
+			do j=1,size(t,2)
                 if (zfull(i,j,k)/1000 >= h_trop(i,j)) then
                     teq(i,j,k) = t_trop(i,j)
                 endif

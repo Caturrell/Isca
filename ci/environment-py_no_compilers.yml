@@ -1,18 +1,14 @@
-name: isca_env
+name: isca_env_no_comp
 channels:
 - conda-forge
 dependencies:
 - dask
 - f90nml
-- fortran-compiler
 - ipykernel
 - jinja2
-- libgfortran
-- netcdf-fortran
 - numpy
-- openmpi
 - pandas
-- python=3.9
+- python
 - pip
 - pytest
 - sh
